@@ -10,8 +10,9 @@ public class MainHero extends Pane{
     Rectangle rectangle;
     private static int gravity;
     private static double yPreviousPosition;
-    private static double GROUND = 408.0;
-    private static double JUMP = 23.0;
+    private static double GROUND_LEVEL = 408.0;
+    private static double JUMP_DELTA = 23.0;
+    private static double START_DELTAX = 20.0;
     public MainHero() {
         yPreviousPosition = -1;
         setGravity(0);
@@ -19,17 +20,9 @@ public class MainHero extends Pane{
         Image character = new Image(getClass().getResourceAsStream("/character.png")); //иконка персонажа
         //Image character = new Image("https://i.stack.imgur.com/Zxfbi.png");
         rectangle.setFill(new ImagePattern(character));
-        setTranslateX(20);
-        setTranslateY(GROUND);
+        setTranslateX(START_DELTAX);
+        setTranslateY(GROUND_LEVEL);
         getChildren().addAll(rectangle);
-        /*new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                rectangle.setTranslateX(rectangle.getTranslateX() + 2);
-                collision();
-            }
-        }.start();*/
-
     }
 
     public static int getGravity() {
@@ -44,11 +37,6 @@ public class MainHero extends Pane{
         for (Barrier bar : Game.barriers) {
             if (getBoundsInParent().intersects(bar.getBoundsInParent())) {
                 Game.setGameOver(true);
-                /*System.out.println(getBoundsInParent());
-                System.out.println(getBoundsInLocal());
-                System.out.println(getLayoutBounds());
-                System.out.println(bar.getBoundsInParent());*/
-                //System.exit(0);
             }
         }
     }
@@ -58,8 +46,9 @@ public class MainHero extends Pane{
         //rectangle.setTranslateX(rectangle.getTranslateX() + 1);
         setTranslateX(getTranslateX() + 4);
 
-        if (!Game.isIsJump() && (getTranslateY() < GROUND)) { //проверка падения вниз при отсутсвии опоры
+        if (!Game.isIsJump() && (getTranslateY() < GROUND_LEVEL)) { //проверка падения вниз при отсутсвии опоры
             double coordinateY = getTranslateY() + 5;
+            setTranslateY(coordinateY);
             for (Brick brick : Game.bricks) {
                 if (getBoundsInParent().intersects(brick.getBoundsInParent())) {
                     coordinateY = brick.getTranslateY() - this.rectangle.getHeight() - 1;
@@ -71,29 +60,26 @@ public class MainHero extends Pane{
                 }
             }
             if (getTranslateY() != coordinateY) {
-                //System.out.println(coordinateY);
                 setTranslateY(coordinateY);
             }
         }
 
-        //System.out.println(rectangle.getWidth());
-        //rectangle.setX(rectangle.getX() + 1);
-        //rectangle.setWidth(50);
-        //rectangle.relocate(getLayoutX() + 1, getLayoutY());
-        //rectangle.setTranslateX(0);
-        //System.out.println(getBoundsInParent());
-               collision();
+        if (getTranslateX() > Game.getFinishX()) {
+            Game.setLevelComplete(true);
+        }
+        collision();
     }
 
     public void moveJump() {
         if (yPreviousPosition == -1) {
             yPreviousPosition = this.getTranslateY();
         }
-        double coordinateY = this.getTranslateY() - JUMP + getGravity();
+        double coordinateY = this.getTranslateY() - JUMP_DELTA + getGravity();
+        //setTranslateY(coordinateY);
         boolean isGround = false;
         for (Brick brick : Game.bricks) {
             if (getBoundsInParent().intersects(brick.getBoundsInParent())) {
-                if (getGravity() <= JUMP) { //летим вверх и столкнулись с кирпичом
+                if (getGravity() <= JUMP_DELTA) { //летим вверх и столкнулись с кирпичом
                     coordinateY = brick.getTranslateY() + brick.height + 1;
                     setGravity(23);
                     System.out.println(coordinateY);
@@ -110,7 +96,6 @@ public class MainHero extends Pane{
             }
         }
         this.setTranslateY(coordinateY);
-        //System.out.println(coordinateY);
         System.out.println("gravity=" + getGravity());
         setGravity(getGravity() + 1);
         if (yPreviousPosition <= this.getTranslateY() || isGround) {
@@ -120,11 +105,7 @@ public class MainHero extends Pane{
         }
     }
 
-    //Image character = new Image("https://i.stack.imgur.com/Zxfbi.png");// иконка персонажа
-    //ImageView imgCharacter = new ImageView(character);
-    //imgCharacter.setFitWidth(50);
-    //imgCharacter.setFitHeight(100);
-
-    //imgCharacter.setX(20.0);
-    //imgCharacter.setY(408.0);
+    public static double getStartDeltax() {
+        return START_DELTAX;
+    }
 }

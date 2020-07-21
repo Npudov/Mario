@@ -4,7 +4,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import view.com.example.project.Game;
 
 public class Barrier extends Pane {
     Rectangle rect;
