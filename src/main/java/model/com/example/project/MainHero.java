@@ -6,7 +6,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import view.com.example.project.Game;
 
-public class MainHero extends Pane{
+public class MainHero extends Pane {
     Rectangle rectangle;
     private static int gravity;
     private static double yPreviousPosition;
