@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,7 +19,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.com.example.project.Barrier;
 import model.com.example.project.Brick;
@@ -35,15 +35,17 @@ public class Game extends Application {
     private static Scene sceneGame;
     public static ArrayList<Barrier> barriers = new ArrayList<>(); //список препятствий
     public static ArrayList<Brick> bricks = new ArrayList<>();
-    //private static char[][] array = {{'O', 'O', 'O', 'O', 'B', 'O', 'O', 'O', 'B', 'O', 'O', 'O', 'B', 'O', 'O', 'O', 'B', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'B', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'B', 'O', 'O', 'O', 'B', 'O', 'O', 'B', 'O', 'O', 'O', 'B', 'B', 'O', 'O', 'O', 'O', 'O', 'O', 'B', 'O', 'O', 'F'},
-    //                                {'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'G', 'O', 'O', 'G', 'G', 'G', 'O', 'O', 'G', 'G', 'G', 'G', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'G','O', 'O', 'O', 'G', 'G', 'O', 'O', 'G', 'O', 'O', 'O', 'O', 'O', 'O', 'O'}};
+    public static ArrayList<CoinAnimation> coins = new ArrayList<>();
 
     private ArrayList<String>  levelOneBarriers = new ArrayList(Arrays
-            .asList("OOOOBOOOBOOOBOOOBOOOOOOOBOOOOOOOOBOOOBOOBOOOBBOOOOOOBOOOF",
-                    "OOOOOOOOOOOOOOOOOOOGOOGGGOOGGGGOOOOOOOOOOGOOOGGOOGOOOOOOO"));
+            .asList("OOOOBOOOBOOOBOOOBOOOOOOOBOOOOOOOOBOOOBOOOOOOBBOOOOOOBOOOF",
+                    "OOOOOOOOOOOOOOOOOOOGOOGGGOOGGGGOOOOOOOOOOGOOOGGOOGOOOOOOO",
+                    "OOOOOOOOOOOOOOCOOOOOOCOOOOOOCOOOOOOOOOOOOOOOOCOOOOOOOCOOO"));
     private ArrayList<String>  levelTwoBarriers = new ArrayList(Arrays
             .asList("OOOOBOOOOOOOBOOOBOOOOOOOBOOOBOOOOOOOOOOOBOOOOBOOOOBOOOOOOF",
-                    "OOOOOOOOGOOOOOOOOOOOOOOOOOOGGGOOOOOOOOOOOGOGOGGOOOOOOOOOOO"));
+                    "OOOOOOOOGOOOOOOOOOOOOOOOOOOGGGOOOOOOOOOOOGOGOGGOOOOOOOOOOO",
+                    "OOOOOOOOOOOOOCOOOOCOOOOOOOOOCOOOOOOOCOOOOOOOOCOOOOOOCOOOOO"));
+
     private static ArrayList<String> arrays = new ArrayList<>();
     private static int deltaX = 0;
     private AnimationTimer animation;
@@ -54,7 +56,7 @@ public class Game extends Application {
     private static int level;
     private static boolean gameOver = false;
     private static boolean levelComplete = false;
-    private static double finishX = 0; //400 + array[0].length * 50 + MainHero.getStartDeltax();
+    private static double finishX = 0;
 
     public static void main(String[] args) {
         launch(args);
@@ -62,14 +64,10 @@ public class Game extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //arrays.add("OOOOBOOOBOOOBOOOBOOOOOOOBOOOOOOOOBOOOBOOBOOOBBOOOOOOBOOOF");
-        //arrays.add("OOOOOOOOOOOOOOOOOOOGOOGGGOOGGGGOOOOOOOOOOGOOOGGOOGOOOOOOO");
         setLevel(1);
         music();
         Scene scene;
         primaryStage.setTitle("Mario");
-        //primaryStage.setWidth(900);
-        //primaryStage.setHeight(600);
 
         Pane root = new Pane();
         Button btnStart = new Button();
@@ -121,6 +119,7 @@ public class Game extends Application {
                 addBarriers(paneCharacter);
 
                 paneCharacter.getChildren().add(mainHero);
+                paneCharacter.setId("paneCharacter");
                 rootGame.getChildren().addAll(imgBackground, imgSupportingBackground, paneCharacter);
 
                 sceneGame = new Scene(rootGame, WIDTH, HEIGHT);
@@ -173,8 +172,6 @@ public class Game extends Application {
                                     primaryStage.setScene(scene);
                                 }
                             });
-
-                            //primaryStage.show();
                         }
 
                         if (levelComplete) {
@@ -185,26 +182,28 @@ public class Game extends Application {
                             text.setFont(Font.font(30));
                             text.setTextFill(Color.GREEN);
 
-                            Button btnOk = new Button("OK!");
-                            btnOk.setFont(Font.font(50));
+                            Button btnNextLevel = new Button("Next level!");
+                            btnNextLevel.setFont(Font.font(50));
                             StackPane.setAlignment(text, Pos.TOP_CENTER);
                             StackPane.setMargin(text, new Insets(10, 0, 0, 0));
 
-                            StackPane rootLevelComplete = new StackPane(text, btnOk);
+                            StackPane rootLevelComplete = new StackPane(text, btnNextLevel);
 
                             Scene sceneLevelComplete = new Scene(rootLevelComplete, WIDTH, HEIGHT);
                             primaryStage.setScene(sceneLevelComplete);
-                            btnOk.setOnAction(new EventHandler<ActionEvent>() {
+                            btnNextLevel.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     score = 0;
                                     primaryStage.setScene(scene);
                                     if (level == 2) {
                                         setLevel(1);
+                                        btnStart.fire();
                                     }
                                     else {
                                         setLevel(2);
                                     }
+
                                 }
                             });
                         }
@@ -238,6 +237,7 @@ public class Game extends Application {
 
     private void setLevel(int level) {
         Game.level = level;
+        arrays.clear();
         switch (level) {
             case 1:
                 arrays.addAll(levelOneBarriers);
@@ -252,48 +252,31 @@ public class Game extends Application {
         }
     }
 
-    /*private void _addBarriers(Pane paneCharacter) {
-        for (int j=0; j < array.length; j++) {
-            deltaX = 0;
-            for (int i = 0; i < array[0].length; i++) {
-                double pointLevelY = 0;
-                //задаем координату Y для соответствующего уровня
-                if (j == 0) {
-                    pointLevelY = 408;
-                } else {
-                    pointLevelY = 308;
-                }
-                if (array[j][i] == 'B') {
-                    Barrier barrier = new Barrier(50);
-                    barriers.add(barrier);
-                    barrier.setTranslateX(400 + deltaX);
-                    barrier.setTranslateY(pointLevelY + 50);
-                    paneCharacter.getChildren().add(barrier);
-                }
-                if (array[j][i] == 'G') {
-                    Brick brick = new Brick(30);
-                    bricks.add(brick);
-                    brick.setTranslateX(400 + deltaX);
-                    brick.setTranslateY(pointLevelY + 30);
-                    paneCharacter.getChildren().add(brick);
-                }
-                deltaX += 50;
-            }
-        }
-    }*/
-
     private void addBarriers(Pane paneCharacter) {
+        barriers.clear();
+        bricks.clear();
+        coins.clear();
+
+        int cnt = 0;
+
         for (int i = 0; i < arrays.size(); i++) {
             deltaX = 0;
             char[] chars = arrays.get(i).toCharArray();
             for (char element: chars) {
                 double pointLevelY = 0;
                 //задаем координату Y для соответствующего уровня
-                if (i == 0) {
-                    pointLevelY = 408;
-                } else {
-                    pointLevelY = 308;
+                switch (i) {
+                    case 0:
+                        pointLevelY = 408;
+                        break;
+                    case 1:
+                        pointLevelY = 308;
+                        break;
+                    case 2:
+                        pointLevelY = 208;
+                        break;
                 }
+
                 if (element == 'B') {
                     Barrier barrier = new Barrier(50);
                     barriers.add(barrier);
@@ -309,8 +292,31 @@ public class Game extends Application {
                     brick.setTranslateY(pointLevelY + 30);
                     paneCharacter.getChildren().add(brick);
                 }
+
+                if (element == 'C') {
+                    CoinAnimation coin = new CoinAnimation();
+                    coins.add(coin);
+                    coin.imageView.setTranslateX(400 + deltaX);
+                    coin.imageView.setTranslateY(pointLevelY + 50);
+                    coin.imageView.setId("coin" + cnt);
+                    cnt++;
+                    paneCharacter.getChildren().add(coin.imageView);
+                    coin.play();
+                }
                 deltaX += 50;
             }
+        }
+    }
+
+    public static void clearCoin(String id) { //очищение определённой монетки по идентификатору
+        Node node = sceneGame.lookup("#paneCharacter");
+        Node coin = node.lookup("#" + id);
+        if (coin == null) {
+            return;
+        }
+        if (node instanceof Pane) {
+            ((Pane) node).getChildren().remove(coin);
+            score += 100;
         }
     }
 

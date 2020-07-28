@@ -4,7 +4,10 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import view.com.example.project.CoinAnimation;
 import view.com.example.project.Game;
+
+import java.util.Iterator;
 
 public class MainHero extends Pane {
     Rectangle rectangle;
@@ -42,8 +45,6 @@ public class MainHero extends Pane {
     }
 
     public void moveForward() {
-        //System.out.println(getBoundsInParent());
-        //rectangle.setTranslateX(rectangle.getTranslateX() + 1);
         setTranslateX(getTranslateX() + 4);
 
         if (!Game.isIsJump() && (getTranslateY() < GROUND_LEVEL)) { //проверка падения вниз при отсутсвии опоры
@@ -53,9 +54,6 @@ public class MainHero extends Pane {
                 if (getBoundsInParent().intersects(brick.getBoundsInParent())) {
                     coordinateY = brick.getTranslateY() - this.rectangle.getHeight() - 1;
                     Game.setIsJump(false); //стоим на опоре - можем прыгать
-                    //System.out.println("brick=" + brick.getTranslateY());
-                    //System.out.println("brick.height=" + brick.height);
-                    //System.out.println("this.rectangle.getHeight()=" + this.rectangle.getHeight());
                     break;
                 }
             }
@@ -68,6 +66,7 @@ public class MainHero extends Pane {
             Game.setLevelComplete(true);
         }
         collision();
+        intersectCoin();
     }
 
     public void moveJump() {
@@ -75,7 +74,6 @@ public class MainHero extends Pane {
             yPreviousPosition = this.getTranslateY();
         }
         double coordinateY = this.getTranslateY() - JUMP_DELTA + getGravity();
-        //setTranslateY(coordinateY);
         boolean isGround = false;
         for (Brick brick : Game.bricks) {
             if (getBoundsInParent().intersects(brick.getBoundsInParent())) {
@@ -88,7 +86,7 @@ public class MainHero extends Pane {
                     System.out.println("bricks height =" + brick.getHeight());
                 }
                 else {
-                    coordinateY = brick.getTranslateY() - brick.height - 2;//this.rectangle.getHeight();
+                    coordinateY = brick.getTranslateY() - brick.height - 2;
                 }
 
                 isGround = true;
@@ -96,12 +94,22 @@ public class MainHero extends Pane {
             }
         }
         this.setTranslateY(coordinateY);
-        System.out.println("gravity=" + getGravity());
         setGravity(getGravity() + 1);
         if (yPreviousPosition <= this.getTranslateY() || isGround) {
             setGravity(0);
             Game.setIsJump(false);
             yPreviousPosition = -1;
+        }
+    }
+
+    public void intersectCoin() { // проверка взятия монетки
+        Iterator<CoinAnimation> coinIterator = Game.coins.iterator();
+        while (coinIterator.hasNext()) {
+            CoinAnimation nextCoin = coinIterator.next();
+            if (getBoundsInParent().intersects(nextCoin.imageView.getBoundsInParent())) {
+                Game.clearCoin(nextCoin.imageView.getId()); //удаляет монетку с определённым идентификатором
+                coinIterator.remove();
+            }
         }
     }
 
