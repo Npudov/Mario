@@ -149,63 +149,11 @@ public class Game extends Application {
                         primaryStage.setTitle("Mario " + "Score: " + score);
 
                         if (gameOver) {
-                            animation.stop();
-                            gameOver = false;
-                            final int finalScore = score;
-                            Label label = new Label("GAME OVER! " + "YOUR SCORE: " + finalScore);
-                            label.setFont(Font.font(50));
-                            label.setTextFill(Color.RED);
-                            Button btnOk = new Button("OK!");
-                            btnOk.setFont(Font.font(50));
-                            StackPane.setAlignment(label, Pos.TOP_CENTER);
-                            StackPane.setMargin(label, new Insets(10, 0, 0, 0));
-
-                            StackPane rootGameOver = new StackPane(label, btnOk);
-
-                            Scene sceneGameOver = new Scene(rootGameOver, WIDTH, HEIGHT);
-                            System.out.println("primaryStage.setScene(sceneGameOver)");
-                            primaryStage.setScene(sceneGameOver);
-                            btnOk.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    score = 0;
-                                    primaryStage.setScene(scene);
-                                }
-                            });
+                            gameOver(primaryStage, scene);
                         }
 
                         if (levelComplete) {
-                            animation.stop();
-                            levelComplete = false;
-                            final int finalScore = score;
-                            Label text = new Label("LEVEL COMPLETE! " + "YOUR SCORE: " + finalScore);
-                            text.setFont(Font.font(30));
-                            text.setTextFill(Color.GREEN);
-
-                            Button btnNextLevel = new Button("Next level!");
-                            btnNextLevel.setFont(Font.font(50));
-                            StackPane.setAlignment(text, Pos.TOP_CENTER);
-                            StackPane.setMargin(text, new Insets(10, 0, 0, 0));
-
-                            StackPane rootLevelComplete = new StackPane(text, btnNextLevel);
-
-                            Scene sceneLevelComplete = new Scene(rootLevelComplete, WIDTH, HEIGHT);
-                            primaryStage.setScene(sceneLevelComplete);
-                            btnNextLevel.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    score = 0;
-                                    primaryStage.setScene(scene);
-                                    if (level == 2) {
-                                        setLevel(1);
-                                        btnStart.fire();
-                                    }
-                                    else {
-                                        setLevel(2);
-                                    }
-
-                                }
-                            });
+                            levelComplete(primaryStage, scene, btnStart);
                         }
                     }
                 };
@@ -233,6 +181,65 @@ public class Game extends Application {
         System.out.println("primaryStage.setScene(scene)");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void gameOver(Stage primaryStage, Scene scene) {
+            animation.stop();
+            gameOver = false;
+            final int finalScore = score;
+            Label label = new Label("GAME OVER! " + "YOUR SCORE: " + finalScore);
+            label.setFont(Font.font(50));
+            label.setTextFill(Color.RED);
+            Button btnOk = new Button("OK!");
+            btnOk.setFont(Font.font(50));
+            StackPane.setAlignment(label, Pos.TOP_CENTER);
+            StackPane.setMargin(label, new Insets(10, 0, 0, 0));
+
+            StackPane rootGameOver = new StackPane(label, btnOk);
+
+            Scene sceneGameOver = new Scene(rootGameOver, WIDTH, HEIGHT);
+            primaryStage.setScene(sceneGameOver);
+            btnOk.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    score = 0;
+                    primaryStage.setScene(scene);
+                }
+            });
+    }
+
+    private void levelComplete(Stage primaryStage, Scene scene, Button btnStart) {
+            animation.stop();
+            levelComplete = false;
+            final int finalScore = score;
+            Label text = new Label("LEVEL COMPLETE! " + "YOUR SCORE: " + finalScore);
+            text.setFont(Font.font(30));
+            text.setTextFill(Color.GREEN);
+
+            Button btnNextLevel = new Button("Next level!");
+            btnNextLevel.setFont(Font.font(50));
+            StackPane.setAlignment(text, Pos.TOP_CENTER);
+            StackPane.setMargin(text, new Insets(10, 0, 0, 0));
+
+            StackPane rootLevelComplete = new StackPane(text, btnNextLevel);
+
+            Scene sceneLevelComplete = new Scene(rootLevelComplete, WIDTH, HEIGHT);
+            primaryStage.setScene(sceneLevelComplete);
+            btnNextLevel.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    score = 0;
+                    primaryStage.setScene(scene);
+                    if (level == 2) {
+                        setLevel(1);
+                    }
+                    else {
+                        setLevel(2);
+                        btnStart.fire();
+                    }
+
+                }
+            });
     }
 
     private void setLevel(int level) {
@@ -315,6 +322,7 @@ public class Game extends Application {
             return;
         }
         if (node instanceof Pane) {
+            //MainHero.soundCoin();
             ((Pane) node).getChildren().remove(coin);
             score += 100;
         }

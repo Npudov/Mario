@@ -1,12 +1,17 @@
 package model.com.example.project;
 
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import view.com.example.project.CoinAnimation;
 import view.com.example.project.Game;
 
+import java.io.File;
 import java.util.Iterator;
 
 public class MainHero extends Pane {
@@ -16,6 +21,7 @@ public class MainHero extends Pane {
     private static double GROUND_LEVEL = 408.0;
     private static double JUMP_DELTA = 23.0;
     private static double START_DELTAX = 20.0;
+    private static MediaPlayer mediaPlayerСoins;
     public MainHero() {
         yPreviousPosition = -1;
         setGravity(0);
@@ -26,6 +32,11 @@ public class MainHero extends Pane {
         setTranslateX(START_DELTAX);
         setTranslateY(GROUND_LEVEL);
         getChildren().addAll(rectangle);
+
+        String file = "src/main/resources/soundCoins.mp3";
+        Media sound = new Media(new File(file).toURI().toString());
+        mediaPlayerСoins = new MediaPlayer(sound);
+        mediaPlayerСoins.setStopTime(Duration.millis(1000));
     }
 
     public static int getGravity() {
@@ -107,10 +118,16 @@ public class MainHero extends Pane {
         while (coinIterator.hasNext()) {
             CoinAnimation nextCoin = coinIterator.next();
             if (getBoundsInParent().intersects(nextCoin.imageView.getBoundsInParent())) {
+                soundCoin();
                 Game.clearCoin(nextCoin.imageView.getId()); //удаляет монетку с определённым идентификатором
                 coinIterator.remove();
             }
         }
+    }
+
+    public static void soundCoin() {
+        mediaPlayerСoins.seek(Duration.ZERO); //устанавливаем указатель в начало записи
+        mediaPlayerСoins.play();
     }
 
     public static double getStartDeltax() {
