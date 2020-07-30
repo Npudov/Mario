@@ -31,7 +31,8 @@ import java.util.Arrays;
 import static java.lang.Math.abs;
 
 public class Game extends Application {
-    private static MediaPlayer mediaPlayer;
+    private static MediaPlayer mediaPlayer; /*объявлен как поле класса, иначе сборщик мусора убивает метод
+    и воспроизведение прекращается*/
     private static Scene sceneGame;
     public static ArrayList<Barrier> barriers = new ArrayList<>(); //список препятствий
     public static ArrayList<Brick> bricks = new ArrayList<>();
@@ -70,10 +71,8 @@ public class Game extends Application {
         primaryStage.setTitle("Mario");
 
         Pane root = new Pane();
-        Button btnStart = new Button();
-        Button btnQuit = new Button();
-        btnStart.setText("Start game");
-        btnQuit.setText("Quit game");
+        Button btnStart = new Button("Start game");
+        Button btnQuit = new Button("Quit game");
         btnStart.setFont(Font.font(20));
         btnQuit.setFont(Font.font(15));
 

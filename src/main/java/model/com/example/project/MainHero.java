@@ -21,6 +21,7 @@ public class MainHero extends Pane {
     private static double GROUND_LEVEL = 408.0;
     private static double JUMP_DELTA = 23.0;
     private static double START_DELTAX = 20.0;
+    private static double MAX_VALUE_GRAVITY = 40.0;
     private static MediaPlayer mediaPlayerСoins;
     public MainHero() {
         yPreviousPosition = -1;
@@ -85,6 +86,7 @@ public class MainHero extends Pane {
             yPreviousPosition = this.getTranslateY();
         }
         double coordinateY = this.getTranslateY() - JUMP_DELTA + getGravity();
+        this.setTranslateY(coordinateY);
         boolean isGround = false;
         for (Brick brick : Game.bricks) {
             if (getBoundsInParent().intersects(brick.getBoundsInParent())) {
@@ -101,16 +103,31 @@ public class MainHero extends Pane {
                 }
 
                 isGround = true;
+                System.out.println("isGround =" + isGround);
                 break;
             }
         }
+        //System.out.println("coordinateY =" + coordinateY);
+        if (coordinateY > GROUND_LEVEL) {
+            coordinateY = GROUND_LEVEL;
+            isGround = true;
+        }
+        //System.out.println("coordinateY =" + coordinateY);
         this.setTranslateY(coordinateY);
-        setGravity(getGravity() + 1);
-        if (yPreviousPosition <= this.getTranslateY() || isGround) {
+        if (getGravity() < MAX_VALUE_GRAVITY) {
+            setGravity(getGravity() + 1);
+        }
+        System.out.println("getGravity() =" + getGravity());
+        //if (yPreviousPosition <= this.getTranslateY() || isGround) {
+        if (isGround) {
             setGravity(0);
             Game.setIsJump(false);
+            System.out.println("yPreviousPosition =" + yPreviousPosition);
+            System.out.println("this.getTranslateY() =" + this.getTranslateY());
+            System.out.println("Game.isIsJump() =" + Game.isIsJump());
             yPreviousPosition = -1;
         }
+
     }
 
     public void intersectCoin() { // проверка взятия монетки
