@@ -12,6 +12,8 @@ import view.com.example.project.CoinAnimation;
 import view.com.example.project.Game;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
 
 public class MainHero extends Pane {
@@ -34,8 +36,10 @@ public class MainHero extends Pane {
         setTranslateY(GROUND_LEVEL);
         getChildren().addAll(rectangle);
 
-        String file = "src/main/resources/soundCoins.mp3";
-        Media sound = new Media(new File(file).toURI().toString());
+        //String file = "src/main/resources/soundCoins.mp3";
+        //Media sound = new Media(new File(file).toURI().toString());
+        File file = new File(getClass().getClassLoader().getResource("soundCoins.mp3").getFile());
+        Media sound = new Media(file.toURI().toString());
         mediaPlayerСoins = new MediaPlayer(sound);
         mediaPlayerСoins.setStopTime(Duration.millis(1000));
     }
@@ -45,7 +49,12 @@ public class MainHero extends Pane {
     }
 
     public static void setGravity(int gravity) {
-        MainHero.gravity = gravity;
+        if (gravity < MAX_VALUE_GRAVITY) {
+            MainHero.gravity = gravity;
+        }
+        else {
+            MainHero.gravity = (int) MAX_VALUE_GRAVITY;
+        }
     }
 
     public void collision() {
@@ -114,9 +123,7 @@ public class MainHero extends Pane {
         }
         //System.out.println("coordinateY =" + coordinateY);
         this.setTranslateY(coordinateY);
-        if (getGravity() < MAX_VALUE_GRAVITY) {
-            setGravity(getGravity() + 1);
-        }
+        setGravity(getGravity() + 1);
         System.out.println("getGravity() =" + getGravity());
         //if (yPreviousPosition <= this.getTranslateY() || isGround) {
         if (isGround) {

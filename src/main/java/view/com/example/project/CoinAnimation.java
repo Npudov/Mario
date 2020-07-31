@@ -25,10 +25,22 @@ public class CoinAnimation extends Transition {
         setInterpolator(Interpolator.EASE_BOTH);
     }
     @Override
-    protected void interpolate(double v) {
+    public void interpolate(double v) {
         int index = Math.min((int) Math.floor(v * count), count - 1);
         int x = index * width;
         final int y = 0;
         imageView.setViewport(new Rectangle2D(x, y, width, height));
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }
