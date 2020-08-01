@@ -10,8 +10,7 @@ import view.com.example.project.Game;
 import java.io.File;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MarioTest {
     @Test
@@ -21,20 +20,6 @@ public class MarioTest {
         MainHero.setGravity(41);
         assertEquals(40, MainHero.getGravity());
     }
-    /*@Test
-    void collision() {
-
-        MainHero mainHero = new MainHero();
-        Barrier barrier = new Barrier(50);
-        ArrayList<Barrier> barriers = new ArrayList<>();
-        barriers.add(barrier);
-        for (Barrier bar : barriers) {
-            if (mainHero.getBoundsInParent().intersects(bar.getBoundsInParent())) {
-                Game.setGameOver(true);
-            }
-        }
-        assertFalse(Game.isGameOver());
-    }*/
     @Test
     void getStartDeltax() {
         assertEquals(20.0, MainHero.getStartDeltax());
@@ -50,6 +35,23 @@ public class MarioTest {
     }
     @Test
     void setIsJump() {
-
+        Game.setIsJump(false);
+        assertFalse(Game.isIsJump());
+        Game.setIsJump(true);
+        assertTrue(Game.isIsJump());
+    }
+    @Test
+    void setGameOver() {
+        Game.setGameOver(false);
+        assertFalse(Game.isGameOver());
+        Game.setGameOver(true);
+        assertTrue(Game.isGameOver());
+    }
+    @Test
+    void setLevelComplete() {
+        Game.setLevelComplete(false);
+        assertFalse(Game.isLevelComplete());
+        Game.setLevelComplete(true);
+        assertTrue(Game.isLevelComplete());
     }
 }
