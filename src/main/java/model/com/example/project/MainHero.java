@@ -1,6 +1,5 @@
 package model.com.example.project;
 
-import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
@@ -9,11 +8,10 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import view.com.example.project.CoinAnimation;
+import view.com.example.project.FireballAnimation;
 import view.com.example.project.Game;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Iterator;
 
 public class MainHero extends Pane {
@@ -25,23 +23,25 @@ public class MainHero extends Pane {
     private static double START_DELTAX = 20.0;
     private static double MAX_VALUE_GRAVITY = 40.0;
     private static MediaPlayer mediaPlayerСoins;
+    private static MediaPlayer mediaPlayerFireballs;
     public MainHero() {
         yPreviousPosition = -1;
         setGravity(0);
         rectangle = new Rectangle(50, 100);
         Image character = new Image(getClass().getResourceAsStream("/character.png")); //иконка персонажа
-        //Image character = new Image("https://i.stack.imgur.com/Zxfbi.png");
         rectangle.setFill(new ImagePattern(character));
         setTranslateX(START_DELTAX);
         setTranslateY(GROUND_LEVEL);
         getChildren().addAll(rectangle);
 
-        //String file = "src/main/resources/soundCoins.mp3";
-        //Media sound = new Media(new File(file).toURI().toString());
-        File file = new File(getClass().getClassLoader().getResource("soundCoins.mp3").getFile());
-        Media sound = new Media(file.toURI().toString());
-        mediaPlayerСoins = new MediaPlayer(sound);
+        File fileCoin = new File(getClass().getClassLoader().getResource("soundCoins.mp3").getFile());
+        Media soundCoin = new Media(fileCoin.toURI().toString());
+        mediaPlayerСoins = new MediaPlayer(soundCoin);
         mediaPlayerСoins.setStopTime(Duration.millis(1000));
+
+        File fileFire = new File(getClass().getClassLoader().getResource("fire2.wav").getFile());
+        Media soundFire = new Media(fileFire.toURI().toString());
+        mediaPlayerFireballs = new MediaPlayer(soundFire);
     }
 
     public static int getGravity() {
@@ -88,6 +88,7 @@ public class MainHero extends Pane {
         }
         collision();
         intersectCoin();
+        intersectFireball();
     }
 
     public void moveJump() {
@@ -102,36 +103,25 @@ public class MainHero extends Pane {
                 if (getGravity() <= JUMP_DELTA) { //летим вверх и столкнулись с кирпичом
                     coordinateY = brick.getTranslateY() + brick.height + 1;
                     setGravity(23);
-                    System.out.println(coordinateY);
-                    System.out.println(getGravity());
-                    System.out.println("bricks translateY =" + brick.getTranslateY());
-                    System.out.println("bricks height =" + brick.getHeight());
                 }
                 else {
                     coordinateY = brick.getTranslateY() - brick.height - 2;
                 }
 
                 isGround = true;
-                System.out.println("isGround =" + isGround);
                 break;
             }
         }
-        //System.out.println("coordinateY =" + coordinateY);
+
         if (coordinateY > GROUND_LEVEL) {
             coordinateY = GROUND_LEVEL;
             isGround = true;
         }
-        //System.out.println("coordinateY =" + coordinateY);
         this.setTranslateY(coordinateY);
         setGravity(getGravity() + 1);
-        System.out.println("getGravity() =" + getGravity());
-        //if (yPreviousPosition <= this.getTranslateY() || isGround) {
         if (isGround) {
             setGravity(0);
             Game.setIsJump(false);
-            System.out.println("yPreviousPosition =" + yPreviousPosition);
-            System.out.println("this.getTranslateY() =" + this.getTranslateY());
-            System.out.println("Game.isIsJump() =" + Game.isIsJump());
             yPreviousPosition = -1;
         }
 
@@ -149,9 +139,26 @@ public class MainHero extends Pane {
         }
     }
 
-    public static void soundCoin() {
+    public void intersectFireball() { // проверка столкновения с файерболлом
+        Iterator<FireballAnimation> fireballIterator = Game.fireballs.iterator();
+        while (fireballIterator.hasNext()) {
+            FireballAnimation nextFireball = fireballIterator.next();
+            if (getBoundsInParent().intersects(nextFireball.imageView.getBoundsInParent())) {
+                soundFireball();
+                Game.setGameOver(true); //удаляет файерболл с определённым идентификатором
+                fireballIterator.remove();
+            }
+        }
+    }
+
+    public void soundCoin() {
         mediaPlayerСoins.seek(Duration.ZERO); //устанавливаем указатель в начало записи
         mediaPlayerСoins.play();
+    }
+
+    public void soundFireball() {
+        mediaPlayerFireballs.seek(Duration.ZERO); //устанавливаем указатель в начало записи
+        mediaPlayerFireballs.play();
     }
 
     public static double getStartDeltax() {

@@ -37,15 +37,16 @@ public class Game extends Application {
     public static ArrayList<Barrier> barriers = new ArrayList<>(); //список препятствий
     public static ArrayList<Brick> bricks = new ArrayList<>();
     public static ArrayList<CoinAnimation> coins = new ArrayList<>();
+    public static ArrayList<FireballAnimation> fireballs = new ArrayList<>();
 
     private ArrayList<String>  levelOneBarriers = new ArrayList(Arrays
-            .asList("OOOOBOOOBOOOBOOOBOOOOOOOBOOOOOOOOBOOOBOOOOOOBBOOOOOOBOOOF",
+            .asList("OOOOBOOOBOOOBOOOBOOOOOOOBOOOOOOOOBOOOBOOOOOOBBOOOOOOBOOOB",
                     "OOOOOOOOOOOOOOOOOOOGOOGGGOOGGGGOOOOOOOOOOGOOOGGOOGOOOOOOO",
-                    "OOOOOOOOOOOOOOCOOOOOOCOOOOOOCOOOOOOOOOOOOOOOOCOOOOOOOCOOO"));
+                    "OOOFOOOOOOOOOOCOOOOOOCOOOOOOCOOOOOOOOOOOOOOOOCOOOOFOOCOOO"));
     private ArrayList<String>  levelTwoBarriers = new ArrayList(Arrays
-            .asList("OOOOBOOOOOOOBOOOBOOOOOOOBOOOBOOOOOOOOOOOBOOOOBOOOOBOOOOOOF",
-                    "OOOOOOOOGOOOOOOOOOOOOOOOOOOGGGOOOOOOOOOOOGOGOGGOOOOOOOOOOO",
-                    "OOOOOOOOOOOOOCOOOOCOOOOOOOOOCOOOOOOOCOOOOOOOOCOOOOOOCOOOOO"));
+            .asList("OOOOBOOOOOOOBOOOBOOOOOOOBOOOBOOOOOOOOOOOBOOOOBOOOOBOOOOOOB",
+                    "OOOOOOOOGOOOOOOOOOOOOOOOOOOOGGOOOOOOOOOOOGOGOGGOOOOOOOOOOO",
+                    "OOOOOOOOOOOOOCOOOOCOOOOFOOOOCOOOOOOOCOOOOOOOOCOOOFOOCOOOOF"));
 
     private static ArrayList<String> arrays = new ArrayList<>();
     private static int deltaX = 0;
@@ -102,7 +103,6 @@ public class Game extends Application {
 
 
                 Image background = new Image(getClass().getResourceAsStream("/background.png")); //фон
-                //Image background = new Image("https://i.stack.imgur.com/WHu9Z.png");
                 ImageView imgBackground = new ImageView(background);
                 imgBackground.setFitWidth(WIDTH);
                 imgBackground.setFitHeight(HEIGHT);
@@ -140,6 +140,11 @@ public class Game extends Application {
                                 rootGame.setLayoutX(-(dislocation - 450));
                             }
                         });
+
+                        for (int i = 0; i < fireballs.size(); i++) {
+                            moveFireball("fireball" + i, 4);
+                        }
+
                         double d = abs(rootGame.getLayoutX());
                         if (d - WIDTH >= imgBackground.getLayoutX()) {
                             imgBackground.setLayoutX(imgBackground.getLayoutX() + WIDTH);
@@ -175,9 +180,6 @@ public class Game extends Application {
             }
         });
 
-
-
-        System.out.println("primaryStage.setScene(scene)");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -262,8 +264,10 @@ public class Game extends Application {
         barriers.clear();
         bricks.clear();
         coins.clear();
+        fireballs.clear();
 
         int cnt = 0;
+        int fireballCnt = 0;
 
         for (int i = 0; i < arrays.size(); i++) {
             deltaX = 0;
@@ -300,7 +304,7 @@ public class Game extends Application {
                 }
 
                 if (element == 'C') {
-                    CoinAnimation coin = new CoinAnimation();
+                    CoinAnimation coin = new CoinAnimation(50, 75, 6, "/coin_10.png");
                     coins.add(coin);
                     coin.imageView.setTranslateX(400 + deltaX);
                     coin.imageView.setTranslateY(pointLevelY + 50);
@@ -308,6 +312,17 @@ public class Game extends Application {
                     cnt++;
                     paneCharacter.getChildren().add(coin.imageView);
                     coin.play();
+                }
+
+                if (element == 'F') {
+                    FireballAnimation fireball = new FireballAnimation(60, 30, 4, "/fireball.png");
+                    fireballs.add(fireball);
+                    fireball.imageView.setTranslateX(400 + deltaX);
+                    fireball.imageView.setTranslateY(pointLevelY + 50);
+                    fireball.imageView.setId("fireball" + fireballCnt);
+                    fireballCnt++;
+                    paneCharacter.getChildren().add(fireball.imageView);
+                    fireball.play();
                 }
                 deltaX += 50;
             }
@@ -321,13 +336,29 @@ public class Game extends Application {
             return;
         }
         if (node instanceof Pane) {
-            //MainHero.soundCoin();
             ((Pane) node).getChildren().remove(coin);
             score += 100;
         }
     }
 
-    private static void music() {
+    public void moveFireball(String id, int delta) {
+        Node node = sceneGame.lookup("#paneCharacter");
+        Node fireball = node.lookup("#" + id);
+        if (fireball == null) {
+            return;
+        }
+        if (fireball instanceof ImageView) {
+            ImageView imageView = (ImageView) fireball;
+            if (imageView.getTranslateX() - delta < 0) { //проверяем вылет за границу экрана
+                if (node instanceof Pane) {
+                    ((Pane) node).getChildren().remove(fireball);
+                }
+            }
+            imageView.setTranslateX(imageView.getTranslateX() - delta);
+        }
+    }
+
+    private void music() {
         String file = "src/main/resources/2-running-about-hurry.mp3";
         Media sound = new Media(new File(file).toURI().toString());
         mediaPlayer = new MediaPlayer(sound);

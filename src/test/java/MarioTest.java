@@ -7,9 +7,6 @@ import org.junit.jupiter.api.Test;
 import view.com.example.project.CoinAnimation;
 import view.com.example.project.Game;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MarioTest {
@@ -26,7 +23,7 @@ public class MarioTest {
     }
     @Test
     void interpolate() {
-        CoinAnimation coinAnimation = new CoinAnimation();
+        CoinAnimation coinAnimation = new CoinAnimation(50, 75, 6, "/coin_10.png");
         double v = 0.0;
         int index = Math.min((int) Math.floor(v * coinAnimation.getCount()), coinAnimation.getCount() - 1);
         int x = index * coinAnimation.getWidth();
