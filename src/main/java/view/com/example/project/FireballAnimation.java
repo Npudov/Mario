@@ -12,6 +12,7 @@ public class FireballAnimation extends BaseAnimation {
         super(width, height, count, fileName);
         setCycleDuration(Duration.millis(1000));
         setCycleCount(Animation.INDEFINITE);
-        setInterpolator(Interpolator.EASE_BOTH);
+        setInterpolator(Interpolator.EASE_BOTH); /*замедление в начале, затем равномерное движение
+                                                 и замедление в конце анимации*/
     }
 }

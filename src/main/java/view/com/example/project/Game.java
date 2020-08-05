@@ -122,7 +122,6 @@ public class Game extends Application {
                 rootGame.getChildren().addAll(imgBackground, imgSupportingBackground, paneCharacter);
 
                 sceneGame = new Scene(rootGame, WIDTH, HEIGHT);
-                System.out.println("primaryStage.setScene(sceneGame)");
                 primaryStage.setScene(sceneGame);
                 primaryStage.show();
 

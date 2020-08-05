@@ -132,7 +132,7 @@ public class MainHero extends Pane {
         while (coinIterator.hasNext()) {
             CoinAnimation nextCoin = coinIterator.next();
             if (getBoundsInParent().intersects(nextCoin.imageView.getBoundsInParent())) {
-                soundCoin();
+                soundEffects(mediaPlayerСoins);
                 Game.clearCoin(nextCoin.imageView.getId()); //удаляет монетку с определённым идентификатором
                 coinIterator.remove();
             }
@@ -144,21 +144,16 @@ public class MainHero extends Pane {
         while (fireballIterator.hasNext()) {
             FireballAnimation nextFireball = fireballIterator.next();
             if (getBoundsInParent().intersects(nextFireball.imageView.getBoundsInParent())) {
-                soundFireball();
+                soundEffects(mediaPlayerFireballs);
                 Game.setGameOver(true); //удаляет файерболл с определённым идентификатором
                 fireballIterator.remove();
             }
         }
     }
 
-    public void soundCoin() {
-        mediaPlayerСoins.seek(Duration.ZERO); //устанавливаем указатель в начало записи
-        mediaPlayerСoins.play();
-    }
-
-    public void soundFireball() {
-        mediaPlayerFireballs.seek(Duration.ZERO); //устанавливаем указатель в начало записи
-        mediaPlayerFireballs.play();
+    public void soundEffects(MediaPlayer mediaPlayer) {
+        mediaPlayer.seek(Duration.ZERO); //устанавливаем указатель в начало записи
+        mediaPlayer.play();
     }
 
     public static double getStartDeltax() {

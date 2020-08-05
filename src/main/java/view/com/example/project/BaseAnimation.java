@@ -21,7 +21,7 @@ public class BaseAnimation extends Transition {
 
     @Override
     protected void interpolate(double v) {
-        int index = Math.min((int) Math.floor(v * count), count - 1);
+        int index = Math.min((int) Math.floor(v * count), count - 1); // floor - отбрасывает дробную часть числа
         int x = index * width;
         final int y = 0;
         imageView.setViewport(new Rectangle2D(x, y, width, height));
